@@ -396,21 +396,44 @@ document.addEventListener('DOMContentLoaded', () => {
     renderGrid();
     fetchRepoStats();
     initScrollBtn();
-});
 
-const backToTopButton = document.getElementById("backToTop");
+    // Hamburger menu
+    const menuToggle = document.getElementById('menuToggle');
+    const navButtons = document.getElementById('navButtons');
 
-window.addEventListener("scroll", () => {
-    if (window.scrollY > 200) {
-        backToTopButton.style.display = "block";
-    } else {
-        backToTopButton.style.display = "none";
+    if (menuToggle && navButtons) {
+        menuToggle.addEventListener('click', () => {
+            navButtons.classList.toggle('active');
+
+            const icon = menuToggle.querySelector('i');
+
+            if (navButtons.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
     }
-});
 
-backToTopButton.addEventListener("click", () => {
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    // Back to top button
+    const backToTopButton = document.getElementById("backToTop");
+
+    if (backToTopButton) {
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 200) {
+                backToTopButton.style.display = "block";
+            } else {
+                backToTopButton.style.display = "none";
+            }
+        });
+
+        backToTopButton.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
+    }
 });
