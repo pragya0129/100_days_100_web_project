@@ -226,4 +226,4 @@ jobs:
           done
 
           echo "Failed to push README contributor reorder changes after 3 attempts."
-          exit 1
+          exit "${push_status:-1}"
