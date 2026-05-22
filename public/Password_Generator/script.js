@@ -6,6 +6,8 @@ const passwordDisplay = document.querySelector("[data-passwordDisplay]");
 const copyBtn = document.querySelector("[data-copy]");
 const copyMsg = document.querySelector("[data-copyMsg]");
 const hideTimerText = document.getElementById("hideTimer");
+const eyeBtn = document.querySelector("[data-eye]");
+const suggestionBox = document.getElementById("suggestionBox");
 const uppercaseCheck = document.querySelector("#uppercase");
 const lowercaseCheck = document.querySelector("#lowercase");
 const numbersCheck = document.querySelector("#numbers");
@@ -44,6 +46,7 @@ function handleSlider() {
 function setIndicator(color) {
     indicator.style.backgroundColor = color;
     indicator.style.boxShadow = `0px 0px 12px 1px ${color}`;
+    if (lengthDisplay) lengthDisplay.style.color = color;
 }
 
 function getRndInteger(min, max) {
@@ -93,11 +96,28 @@ function calcStrength() {
       strengthText.innerText = "Weak";
 
     }
+        updateSuggestions();
+}
+
+function updateSuggestions(){
+        if(!suggestionBox) return;
+        const suggestions = [];
+        if(passwordLength < 8) suggestions.push('Increase length to at least 8');
+        if(!uppercaseCheck.checked) suggestions.push('Include uppercase letters');
+        if(!lowercaseCheck.checked) suggestions.push('Include lowercase letters');
+        if(!numbersCheck.checked) suggestions.push('Include numbers');
+        if(!symbolsCheck.checked) suggestions.push('Include symbols');
+
+        if(suggestions.length === 0){
+                suggestionBox.innerText = '';
+        } else {
+                suggestionBox.innerText = 'Suggestions: ' + suggestions.join(', ');
+        }
 }
 
 async function copyContent() {
     try {
-        await navigator.clipboard.writeText(passwordDisplay.value);
+        await navigator.clipboard.writeText(password);
         copyMsg.innerText = "copied";
     }
     catch (e) {
@@ -157,9 +177,34 @@ inputSlider.addEventListener("input",(e)=>{
 
 
 copyBtn.addEventListener('click', () => {
-    if (passwordDisplay.value)
+    if (password && passwordDisplay.value !== "********")
         copyContent();
 })
+
+if(eyeBtn){
+    eyeBtn.addEventListener('click', ()=>{
+        if(!password) return;
+        // if currently hidden, show for 5 seconds
+        if(passwordDisplay.value === "********"){
+            passwordDisplay.value = password;
+            clearTimeout(hideTimeout);
+            clearInterval(countdownInterval);
+            let showLeft = 5;
+            hideTimerText.innerText = `Visible for ${showLeft}s`;
+            const tmpInterval = setInterval(()=>{
+                showLeft--;
+                if(showLeft > 0) hideTimerText.innerText = `Visible for ${showLeft}s`;
+                else { clearInterval(tmpInterval); passwordDisplay.value = "********"; hideTimerText.innerText = "Password hidden for security"; }
+            },1000);
+        } else {
+            // if currently visible, hide immediately
+            passwordDisplay.value = "********";
+            hideTimerText.innerText = "Password hidden for security";
+            clearTimeout(hideTimeout);
+            clearInterval(countdownInterval);
+        }
+    });
+}
 
 generateBtn.addEventListener('click', () => {
     //none of the checkbox are selected
