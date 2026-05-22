@@ -388,15 +388,17 @@ async function fetchRepoStats() {
 
     const setNumber = (id, val) => {
       const el = document.getElementById(id);
-      if (!el || !Number.isFinite(val)) return;
-      el.textContent = val.toLocaleString();
+      if (!el) return;
+      const numericVal = Number(val);
+      if (!Number.isFinite(numericVal)) return;
+      el.textContent = numericVal.toLocaleString();
     };
 
     if (repo) {
       setNumber('starCount', repo.stargazers_count);
       setNumber('forkCount', repo.forks_count);
-      const prCount = typeof prs?.total_count === 'number' ? prs.total_count : null;
-      const issueCount = typeof prCount === 'number' ? repo.open_issues_count - prCount : repo.open_issues_count;
+      const prCount = Number.isFinite(prs?.total_count) ? prs.total_count : null;
+      const issueCount = prCount !== null ? repo.open_issues_count - prCount : repo.open_issues_count;
       setNumber('issueCount', Math.max(issueCount, 0));
     }
 
