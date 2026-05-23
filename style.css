@@ -1975,6 +1975,7 @@ body.light-mode .brand-mark {
   background-position: right 18px center;
   padding-right: 40px;
   transition: all 0.3s ease;
+  transform: rotate(0deg);
 }
 
 #techStackFilter:hover {
