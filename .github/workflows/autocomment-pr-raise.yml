@@ -38,7 +38,8 @@ jobs:
     - name: Assign PR Creator
       run: |
         ASSIGNEE="${{ github.event.pull_request.user.login }}"
-        PAYLOAD="{\"assignees\":[\"$ASSIGNEE\"]}"
+        export ASSIGNEE
+        PAYLOAD=$(python -c 'import json, os; print(json.dumps({"assignees": [os.environ["ASSIGNEE"]]}))')
         RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
           -X PATCH \
           -H "Authorization: token $GITHUB_TOKEN" \
