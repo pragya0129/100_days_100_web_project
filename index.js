@@ -385,6 +385,54 @@ const CATEGORY_LABEL = {
    GITHUB REPO STATS
    ============================================================ */
 async function fetchRepoStats() {
+
+    const set = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+    };
+
+    const setFallback = () => {
+        set('starCount', 'N/A');
+        set('forkCount', 'N/A');
+        set('issueCount', 'N/A');
+        set('prCount', 'N/A');
+    };
+
+    try {
+
+        // Optional loading state
+        set('starCount', 'Loading...');
+        set('forkCount', 'Loading...');
+        set('issueCount', 'Loading...');
+        set('prCount', 'Loading...');
+
+        const [repoRes, prRes] = await Promise.all([
+            fetch(`https://api.github.com/repos/${window.REPO_OWNER}/${window.REPO_NAME}`),
+            fetch(`https://api.github.com/search/issues?q=repo:${window.REPO_OWNER}/${window.REPO_NAME}+type:pr+state:open`)
+        ]);
+
+        if (!repoRes.ok || !prRes.ok) {
+            throw new Error("GitHub API request failed");
+        }
+
+        const repo = await repoRes.json();
+        const prs = await prRes.json();
+
+        set('starCount', repo.stargazers_count.toLocaleString());
+        set('forkCount', repo.forks_count.toLocaleString());
+        set('issueCount', (repo.open_issues_count - prs.total_count).toLocaleString());
+        set('prCount', prs.total_count.toLocaleString());
+
+    } catch (e) {
+
+        console.warn("GitHub stats unavailable:", e.message);
+
+        // Show fallback text instead of permanent dashes
+        setFallback();
+    }
+}
+// NOTE (difficulty): Generating content client-side must sanitize URLs and
+// avoid heavy sync work; large project lists may block the main thread.
   try {
     const [repoRes, prRes] = await Promise.all([
       fetch(`https://api.github.com/repos/${window.REPO_OWNER}/${window.REPO_NAME}`).catch(() => null),
