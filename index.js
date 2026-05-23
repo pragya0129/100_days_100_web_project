@@ -104,7 +104,7 @@ const PROJECT_DATA = [
   ['Day 33', 'Weather Forecasting', './public/Weather%20Forcasting/index.html', 'weather api', 'intermediate'],
   ['Day 34', 'Email Validator', './public/email%20validator/index.html', 'api javascript', 'beginner'],
   ['Day 35', 'Vanilla-JavaScript-Calculator', './public/Vanilla-JavaScript-Calculator-master/index.html', 'tool javascript', 'beginner'],
-['Day 36', 'Medical App', './public/Medical_App/index.html', 'javascript', 'intermediate'],
+  ['Day 36', 'Medical App', './public/Medical_App/index.html', 'javascript', 'intermediate'],
   ['Day 37', '2048 Game', './public/2048_game/index.html', 'game javascript', 'intermediate'],
   ['Day 38', 'Github Profile Finder', './public/github_profile_finder/index.html', 'api javascript', 'intermediate'],
   ['Day 39', 'Notes App', './public/notes-app/index.html', 'todo javascript', 'beginner'],
@@ -134,7 +134,7 @@ const PROJECT_DATA = [
   ['Day 63', 'Image to Text App', './public/Image-To-Text-App/index.html', 'api javascript', 'intermediate'],
   ['Day 64', 'Zomato-clone', './public/zomato-clone/zomato.html', 'clone css', 'beginner'],
   ['Day 65', 'The Cube', './public/The%20Cube/index.html', 'ui canvas css', 'intermediate'],
-  ['Day 66', 'Flask Authentication App', 'https://github.com/dhairyagothi/100_days_100_web_project/tree/Main/public/flask_auth_app', 'api javascript', 'intermediate'],
+  ['Day 66', 'Flask Authentication App', './public/flask_auth_app/explain.html', 'api javascript', 'intermediate'],
   ['Day 67', 'Blog-Website', './public/blog/main.html', 'css', 'beginner'],
   ['Day 68', '3d Rotating Card', './public/3d%20cards/index.html', 'ui css', 'intermediate'],
   ['Day 69', 'Spotify Clone Project', './public/spotify-clone%20-project/index.html', 'clone api javascript', 'intermediate'],
@@ -217,6 +217,9 @@ const PROJECT_DATA = [
   ['Day 146', 'Data Sructures Visualizer', './public/Data Structures Visualizer/index.html', 'visualizer', 'intermediate'],
   ['Day 147', 'Chronosphere', './public/Chronosphere/index.html', 'game canvas', 'intermediate'],
   ['Day 148', 'Contest Tracker', './public/ContestTracker/index.html', 'tool javascript', 'advanced'],
+  
+
+
   ['Day 149', 'GitHub Profile Battle', './public/Github-Profile-Battle/index.html', 'tool javascript', 'advanced'],
   ['Day 150', 'App Privacy Policy Generator', './public/AppPrivacyPolicyGenerator/index.html', 'tool javascript', 'intermediate'],
   ['Day 151', 'Mini Carrom Game', './public/mini carrom/index.html', 'html css javascript', 'intermediate'],
@@ -227,8 +230,10 @@ const PROJECT_DATA = [
   ['Day 156', 'Placement Predictor', './public/Placement-Predictor/index.html', 'tool javascript html css', 'advanced'],
   ['Day 157', 'Map Route Tracker', './public/Vector-Map-Route-Tracer/index.html', 'html css javascript', 'advanced'],
   ['Day 158', 'GitHub Promo Maker', './public/GitHubPromoMaker/index.html', 'html css javascript', 'intermediate'],
+
   ['Day 159' , 'Dining Philosophers Simulation' , './public/Dining Philosophers Simulation/index.html' , 'simulation algorithm javascript' , 'intermediate' ] ,
   ['Day 160', 'Website Personalizer', './public/WebsitePersonalizer/index.html', 'html css javascript', 'intermediate'],
+  ['Day 161', "Unit-Converter", './public/Unit-Converter/index.html' , 'tool javascript html css' , 'intermediate'],
 ];
 const PROJECTS = PROJECT_DATA;
 
@@ -541,6 +546,8 @@ function renderGrid() {
   pageItems.forEach(([day, name, url, tags]) => {
     const category = getCategoryFromTags(tags, name);
     const card = document.createElement('div');
+    
+    // FIX PART 1: Add a pointer cursor so users know it's clickable
     card.className = 'project-card';
     const isBookmarked = bookmarkedProjects ? bookmarkedProjects.some((item) => item[0] === day) : false;
     
@@ -549,9 +556,18 @@ function renderGrid() {
     if (tags) {
       tagsArray = typeof tags === 'string' ? tags.split(/\s+/).filter((t) => t) : tags;
     }
+    card.style.cursor = 'pointer'; 
+    
+    // FIX PART 2: Make the whole card clickable to open the demo in a new tab
+    card.onclick = () => window.open(url.trim(), '_blank');
+
+    const isBookmarked = bookmarkedProjects.some((item) => item[0] === day);
+    const tagsArray = typeof tags === 'string' ? tags.split(/\s+/).filter((t) => t) : tags;
     const tagsHTML = tagsArray.map((t) => `<span class="tag">${t}</span>`).join('');
     const sourceUrl = getSourceUrl(url);
 
+    // FIX PART 3: Add onclick="event.stopPropagation()" to the Demo, Code, and Bookmark buttons
+    // This stops the click from "bubbling up" to the main card, preventing double-opening!
     card.innerHTML = `
       <div class="card-meta">
         <span class="card-day">${day}</span>
@@ -866,12 +882,34 @@ function renderRecentProjects() {
 
 const bookmarkToggleBtn = document.getElementById('bookmarkToggleBtn');
 const recentToggleBtn = document.getElementById('recentToggleBtn');
+const copyBookmarksBtn = document.getElementById('copyBookmarksBtn');
 
 if (bookmarkToggleBtn) {
   bookmarkToggleBtn.addEventListener('click', () => {
     showAllBookmarks = !showAllBookmarks;
     bookmarkToggleBtn.textContent = showAllBookmarks ? 'Show Less' : 'View All';
     renderBookmarks();
+  });
+}
+
+if (copyBookmarksBtn) {
+  copyBookmarksBtn.addEventListener('click', async () => {
+    if (bookmarkedProjects.length === 0) {
+      showToast('No bookmarks to copy!');
+      return;
+    }
+    const textToCopy = bookmarkedProjects.map(p => {
+      const projectName = p[1];
+      const projectLink = new URL(p[2], window.location.href).href;
+      return `${projectName} - ${projectLink}`;
+    }).join('\n');
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      showToast('Bookmarks copied to clipboard!');
+    } catch (err) {
+      showToast('Failed to copy bookmarks.');
+    }
   });
 }
 
