@@ -1068,7 +1068,7 @@ function updateNavbar() {
         `;
   const otherLink = isRoot
     ? `<a class="btn btn-ghost btn-sm" href="${base}contributors/contributor.html">Contributors</a>`
-    : `<a class="btn btn-ghost btn-sm" href="${base}index.html">Home</a>`;
+    : `<a class="btn btn-ghost btn-sm" href="${base}index.html"><i class="fas fa-home"></i> Home</a>`;
 
   if (username) {
     container.innerHTML = `
@@ -1091,7 +1091,7 @@ function updateNavbar() {
     container.innerHTML = `
             ${themeButton}
             ${otherLink}
-            <a class="btn btn-ghost btn-sm" href="https://github.com/dhairyagothi" target="_blank">
+            <a class="btn btn-ghost btn-sm" href="https://github.com/dhairyagothi/100_days_100_web_project" target="_blank">
                 <i class="fab fa-github"></i> GitHub
             </a>
             <button class="btn btn-ghost btn-sm" id="generateReadmeBtn">Generate README</button>
