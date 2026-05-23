@@ -223,12 +223,9 @@ const PROJECT_DATA = [
   ['Day 152', 'Physics Ball Simulation', './public/PhysicsBallSimulation/index.html', 'html css javascript canvas', 'advanced'],
   ['Day 153', 'Material3 Showcase', './public/Material3Showcase/index.html', 'tool javascript', 'intermediate'],
   ['Day 154', 'FocusRoom', './public/FocusRoom/index.html', 'html css javascript productivity timer tasks ambient', 'intermediate'],
-<<<<<<< HEAD
-  ['Day 155', 'Tenzies Game', './public/TENZI-GAME/index.html', 'game react components javascript', 'intermediate'],
-=======
-  ['Day 155', 'Placement Predictor', './public/Placement-Predictor/index.html', 'tool javascript html css', 'advanced'],
-  ['Day 156', 'Map Route Tracker', './public/Vector-Map-Route-Tracer/index.html', 'html css javascript', 'advanced'],
->>>>>>> upstream/Main
+  ['Day 155', 'Hangman Game', './public/hangman-react-ts/HangmanGame/index.html', 'react typescript game hangman vite', 'advanced'],
+  ['Day 156', 'Placement Predictor', './public/Placement-Predictor/index.html', 'tool javascript html css', 'advanced'],
+  ['Day 157', 'Map Route Tracker', './public/Vector-Map-Route-Tracer/index.html', 'html css javascript', 'advanced'],
 ];
 const PROJECTS = PROJECT_DATA;
 
@@ -389,49 +386,52 @@ const CATEGORY_LABEL = {
    GITHUB REPO STATS
    ============================================================ */
 async function fetchRepoStats() {
-  try {
-    const [repoRes, prRes] = await Promise.all([
-      fetch(`https://api.github.com/repos/${window.REPO_OWNER}/${window.REPO_NAME}`).catch(() => null),
-      fetch(`https://api.github.com/search/issues?q=repo:${window.REPO_OWNER}/${window.REPO_NAME}+type:pr+state:open`).catch(() => null),
-    ]);
 
-    const repo = repoRes && repoRes.ok ? await repoRes.json() : null;
-    const prs = prRes && prRes.ok ? await prRes.json() : null;
-    const prCount = Number.isFinite(prs?.total_count) ? prs.total_count : null;
-
-    const setNumber = (id, val) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const numericVal = Number(val);
-      if (!Number.isFinite(numericVal)) return;
-      el.textContent = numericVal.toLocaleString();
+    const set = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
     };
 
-    if (repo) {
-      setNumber('starCount', repo.stargazers_count);
-      setNumber('forkCount', repo.forks_count);
-      const issueCount = prCount !== null ? repo.open_issues_count - prCount : repo.open_issues_count;
-      if (issueCount < 0) {
-        console.warn('GitHub stats issue count negative:', {
-          openIssues: repo.open_issues_count,
-          prCount,
-        });
-      }
-      setNumber('issueCount', Math.max(issueCount, 0));
-    }
+    const setFallback = () => {
+        set('starCount', 'N/A');
+        set('forkCount', 'N/A');
+        set('issueCount', 'N/A');
+        set('prCount', 'N/A');
+    };
 
-    if (prCount !== null) {
-      setNumber('prCount', prCount);
-    }
+    try {
 
-    if (!repo && !prs) {
-      console.warn('GitHub stats unavailable: Stats fetch failed');
+        // Optional loading state
+        set('starCount', 'Loading...');
+        set('forkCount', 'Loading...');
+        set('issueCount', 'Loading...');
+        set('prCount', 'Loading...');
+
+        const [repoRes, prRes] = await Promise.all([
+            fetch(`https://api.github.com/repos/${window.REPO_OWNER}/${window.REPO_NAME}`),
+            fetch(`https://api.github.com/search/issues?q=repo:${window.REPO_OWNER}/${window.REPO_NAME}+type:pr+state:open`)
+        ]);
+
+        if (!repoRes.ok || !prRes.ok) {
+            throw new Error("GitHub API request failed");
+        }
+
+        const repo = await repoRes.json();
+        const prs = await prRes.json();
+
+        set('starCount', repo.stargazers_count.toLocaleString());
+        set('forkCount', repo.forks_count.toLocaleString());
+        set('issueCount', (repo.open_issues_count - prs.total_count).toLocaleString());
+        set('prCount', prs.total_count.toLocaleString());
+
+    } catch (e) {
+
+        console.warn("GitHub stats unavailable:", e.message);
+
+        // Show fallback text instead of permanent dashes
+        setFallback();
     }
-  } catch (e) {
-    console.warn('GitHub stats unavailable:', e.message);
-  }
 }
-
 function generateReadme() {
   try {
     const lines = [];
@@ -464,6 +464,7 @@ function generateReadme() {
    ============================================================ */
 let activeFilter = 'all';
 let searchQuery = '';
+let sortOption = 'default';
 
 function renderGrid() {
   const grid = document.getElementById('projectGrid');
@@ -484,6 +485,32 @@ function renderGrid() {
 
     return matchesFilter && matchesSearch && matchesTech;
   });
+  if (sortOption === 'az') {
+  filtered.sort((a, b) => a[1].localeCompare(b[1]));
+}
+
+if (sortOption === 'latest') {
+  filtered.sort((a, b) => {
+    const dayA = parseInt(a[0].replace('Day ', ''));
+    const dayB = parseInt(b[0].replace('Day ', ''));
+    return dayB - dayA;
+  });
+}
+
+if (sortOption === 'difficulty') {
+  const difficultyOrder = {
+    beginner: 1,
+    intermediate: 2,
+    advanced: 3
+  };
+
+  filtered.sort((a, b) => {
+    return (
+      difficultyOrder[a[4].toLowerCase()] -
+      difficultyOrder[b[4].toLowerCase()]
+    );
+  });
+}
 
   grid.innerHTML = '';
 
@@ -915,7 +942,17 @@ function initSearch() {
     renderGrid();
   });
 }
+function initSorting() {
+  const sortSelect = document.getElementById('sortProjects');
 
+  if (!sortSelect) return;
+
+  sortSelect.addEventListener('change', (e) => {
+    sortOption = e.target.value;
+    currentPage = 1;
+    renderGrid();
+  });
+}
 /* ============================================================
    TECH STACK SEARCH INITIALIZATION
    ============================================================ */
@@ -1132,10 +1169,14 @@ function hasProjectGrid() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  getAllTechnologies();
-
   initTheme();
   updateNavbar();
+
+  initFilterChips();
+  initSearch();
+  initSorting();
+  initTechStackSearch();
+
   syncProjectCounts();
   fetchRepoStats();
   initScrollBtn();
