@@ -1365,7 +1365,7 @@ window.clearAllTechFilters = clearAllTechFilters;
       velocity: reducedMotion ? 0.12 : smallScreen ? 0.18 : 0.3,
       radius: reducedMotion ? 1.8 : smallScreen ? 2.2 : 4,
       fps: reducedMotion ? 14 : smallScreen ? 20 : 36,
-      showLinks: !reducedMotion || !smallScreen,
+      showLinks: !reducedMotion && !smallScreen,
     };
   };
 
