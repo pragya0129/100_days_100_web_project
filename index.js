@@ -1630,6 +1630,39 @@ function initTechStackSearch() {
 const searchInput = document.getElementById('searchInput');
 const clearSearchBtn = document.getElementById('clearSearch');
 
+function updateCategoryCounts() {
+  const counts = {};
+  for (const key of Object.keys(FILTER_CATEGORY_MAP)) {
+    if (key !== 'all') {
+      counts[key] = 0;
+    }
+  }
+
+  PROJECTS.forEach(([day, name, url, tags]) => {
+    const category = getCategoryFromTags(tags, name);
+    const filterKey = Object.keys(FILTER_CATEGORY_MAP).find(
+      (key) => FILTER_CATEGORY_MAP[key] === category
+    );
+    if (filterKey && filterKey !== 'all') {
+      counts[filterKey]++;
+    }
+  });
+
+  const categorySpans = {
+    'game': document.getElementById('gameCount'),
+    'clone': document.getElementById('cloneCount'),
+    'tool': document.getElementById('toolCount'),
+    'ui': document.getElementById('uiCount'),
+    'api': document.getElementById('apiCount')
+  };
+
+  for (const [key, span] of Object.entries(categorySpans)) {
+    if (span) {
+      span.textContent = counts[key].toLocaleString();
+    }
+  }
+}
+
 function syncProjectCounts() {
   let filtered = [...PROJECTS];
 
@@ -1651,6 +1684,8 @@ function syncProjectCounts() {
   if (searchInput) {
     searchInput.placeholder = `Search ${PROJECTS.length.toLocaleString()} projects…`;
   }
+
+  updateCategoryCounts();
 }
 
 // Clear button functionality
@@ -2108,8 +2143,18 @@ function applyFilters(search, category) {
   searchQuery = search || '';
   activeFilter = category || 'all';
   currentPage = 1;
-  renderGrid();
 
+  // Sync active chip selection with URL state
+  const chips = document.querySelectorAll('.chip[data-filter]');
+  chips.forEach((chip) => {
+    if (chip.dataset.filter === activeFilter) {
+      chip.classList.add('active');
+    } else {
+      chip.classList.remove('active');
+    }
+  });
+
+  renderGrid();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
