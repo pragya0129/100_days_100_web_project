@@ -1818,5 +1818,14 @@
 "techStack":["tool","javascript","html","css","visualizer","education"],
 "difficulty":"advanced",
 "projectPath":"./public/code-execution-visualizer/index.html"
+},
+{
+"projectNo":183,
+"projectName":"Saturn Particle Gesture",
+"projectType":"Animation",
+"projectDesc":"Interactive space visualization rendering a Saturn-like planet using 3000+ dynamic particles, controlled via real-time hand gesture recognition using webcam and MediaPipe.",
+"techStack":["html","css","javascript","canvas","mediapipe","gesture"],
+"difficulty":"advanced",
+"projectPath":"./public/Planet_gesture_formation/index.html"
 }
 ]
