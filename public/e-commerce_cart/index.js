@@ -13,8 +13,24 @@ btnClose.addEventListener('click',()=>{
 document.addEventListener('DOMContentLoaded',loadshoe);
 
 function loadshoe(){
-  loadContent();
 
+  itemList.forEach((product) => {
+
+    let newProductElement = createCartProduct(
+      product.title,
+      product.price,
+      product.imgSrc,
+      product.remove_shoe
+    );
+
+    let element = document.createElement('div');
+    element.innerHTML = newProductElement;
+
+    let cartBasket = document.querySelector('.cart-content');
+    cartBasket.append(element);
+  });
+
+  loadContent();
 }
 
 function loadContent(){
@@ -43,7 +59,8 @@ let wishlistBtns = document.querySelectorAll('.wishlist-btn');
 wishlistBtns.forEach((btn) => {
   btn.addEventListener('click', toggleWishlist);
 });
-
+updateTotal();
+}
 
 
 //Remove Item
@@ -51,6 +68,7 @@ function removeItem(){
   if(confirm('Are Your Sure to Remove')){
     let title=this.parentElement.querySelector('.cart-shoe-title').innerHTML;
     itemList=itemList.filter(el=>el.title!=title);
+    localStorage.setItem("cartItems", JSON.stringify(itemList));
     this.parentElement.remove();
     loadContent();
   }
@@ -61,10 +79,11 @@ function changeQty(){
   if(isNaN(this.value) || this.value<1){
     this.value=1;
   }
+  localStorage.setItem("cartItems", JSON.stringify(itemList));
   loadContent();
 }
 
-let itemList=[];
+let itemList = JSON.parse(localStorage.getItem("cartItems")) || [];
 let wishlist = [];
 
 //Add Cart
@@ -110,6 +129,7 @@ function addCart(){
   return;
   }else{
   itemList.push(newProduct);
+  localStorage.setItem("cartItems", JSON.stringify(itemList));
   }
 
 
