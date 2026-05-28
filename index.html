@@ -178,6 +178,7 @@
             class="search-input"
             placeholder="Search projects…"
             autocomplete="off"
+            aria-label="Search projects"
           />
           <button id="clearSearch" class="clear-btn" aria-label="Clear search" type="button">
             &times;
@@ -199,23 +200,20 @@
 
       <!-- Tech Stack Dropdown & Clear Filters -->
       <div style="margin: 20px 0 10px 0; display: flex; justify-content: flex-start; align-items: center; gap: 15px; width: 100%; flex-wrap: wrap;">
-        <select id="techStackFilter" style="width: 280px; padding: 12px 20px; border-radius: 30px; border: 1px solid #333; background: #1a1a1a; color: white; cursor: pointer; font-size: 14px;">
+        <select id="techStackFilter" style="width: 280px; padding: 12px 20px; border-radius: 30px; border: 1px solid #333; background: #1a1a1a; color: white; cursor: pointer; font-size: 14px;" aria-label="Filter by tech stack">
           <option value="all">Filter by Tech Stack (All)</option>
-    <option value="javascript">JavaScript</option>
-    <option value="css">CSS</option>
-    <option value="html">HTML</option>
-    <option value="react">React</option>
-    <option value="python">Python</option>
-    <option value="typescript">TypeScript</option>
-    <option value="tailwindcss">Tailwind CSS</option>
+          <option value="javascript">JavaScript</option>
+          <option value="css">CSS</option>
+          <option value="html">HTML</option>
+          <option value="react">React</option>
+          <option value="python">Python</option>
+          <option value="typescript">TypeScript</option>
+          <option value="tailwindcss">Tailwind CSS</option>
         </select>
         <button id="clearAllFiltersBtn" class="clear-filters-btn" style="display: none; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 30px; border: 1px dashed var(--accent); background: var(--accent-dim); color: var(--accent); font-weight: 500; font-size: 14px; cursor: pointer; transition: var(--t);">
           <i class="fas fa-filter-circle-xmark"></i> Clear Filters
         </button>
       </div>
-
-<!-- Tech Stack Dropdown - Only technologies that exist in projects -->
-
 
     <!-- Project Grid -->
     <div class="project-grid" id="projectGrid"></div>
