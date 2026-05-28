@@ -19,6 +19,7 @@ let seconds = 0
 let score = 0
 let selected_insect = {}
 let gameInterval // Stores the time interval
+let isGamePaused = false // Helps pausing timer when user clicks 'End Game' button
 
 start_btn.addEventListener('click', () => screens[0].classList.add('up'))
 
@@ -39,12 +40,12 @@ function startGame() {
 }
 
 function increaseTime() {
+    seconds++
     let m = Math.floor(seconds / 60)
     let s = seconds % 60
     m = m < 10 ? `0${m}` : m
     s = s < 10 ? `0${s}` : s
     timeEl.innerHTML = `Time: ${m}:${s}`
-    seconds++
 }
 
 function createInsect() {
@@ -91,11 +92,17 @@ function increaseScore() {
 // Show confirmation popup when user clicks 'End Game' button
 endBtn.addEventListener('click', () => {
     gameOverPopup.style.display = 'flex'
+    clearInterval(gameInterval) 
+    isGamePaused = true
 })
 
 // Resume game
 noBtn.addEventListener('click', () => {
     gameOverPopup.style.display = 'none'
+    if(isGamePaused) {
+        gameInterval = setInterval(increaseTime, 1000)
+        isGamePaused = false
+    }
 })
 
 // Ends the game 
