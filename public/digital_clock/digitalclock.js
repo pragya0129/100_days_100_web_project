@@ -1,5 +1,8 @@
 // App configuration and state
-let activeAccent = localStorage.getItem("clockAccent") || "classic";
+// Dark mode state
+let isDarkMode = localStorage.getItem("clockDarkMode") === "true";
+if (isDarkMode) document.body.classList.add("dark-mode");
+let activeTheme = localStorage.getItem("clockTheme") || "classic";
 let primaryTimezone = localStorage.getItem("primaryTimezone") || "local";
 let alarms = JSON.parse(localStorage.getItem("clock_alarms")) || [];
 let worldClocks = JSON.parse(localStorage.getItem("clock_worldClocks")) || [];
@@ -76,10 +79,10 @@ function applyTimeBasedTheme() {
 
 // INIT
 document.addEventListener("DOMContentLoaded", () => {
-  // Initialize time-based theme first
-  applyTimeBasedTheme();
-  // Then apply manual accent color
-  setAccentColor(activeAccent);
+  const btn = document.getElementById("dark-mode-toggle");
+  if (btn) btn.textContent = isDarkMode ? "☀️" : "🌙";
+  applyDarkMode(isDarkMode);
+  setTheme(activeTheme);
 
   populateTimezoneDropdown();
   renderAlarmsList();
@@ -102,10 +105,7 @@ function setAccentColor(accent) {
   activeAccent = accent;
   localStorage.setItem("clockAccent", accent);
 
-  // Remove only manual accent classes, keep time-based theme class
-  document.body.classList.remove("classic-theme", "modern-theme", "future-theme", "nebula-theme");
-  // Add the selected manual accent class
-  document.body.classList.add(`${accent}-theme`);
+  document.body.className = `${theme}-theme${isDarkMode ? " dark-mode" : ""}`;
 
   document.querySelectorAll(".theme-swatch").forEach(swatch => {
     swatch.classList.toggle("active", swatch.dataset.theme === accent);
@@ -633,4 +633,17 @@ function escapeHtml(text) {
   const div = document.createElement("div");
   div.textContent = text;
   return div.innerHTML;
+}
+
+// ================= DARK MODE =================
+function applyDarkMode(enabled) {
+  isDarkMode = enabled;
+  document.body.classList.toggle("dark-mode", enabled);
+  const btn = document.getElementById("dark-mode-toggle");
+  if (btn) btn.textContent = enabled ? "☀️" : "🌙";
+  localStorage.setItem("clockDarkMode", enabled);
+}
+
+function toggleDarkMode() {
+  applyDarkMode(!isDarkMode);
 }
