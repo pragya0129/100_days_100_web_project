@@ -2,4 +2,4 @@ function Settings() {
   return null;
 }
 
-export default Settings
+export default Settings;

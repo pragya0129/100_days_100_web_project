@@ -20,13 +20,13 @@ A clean, feature-rich Todo List application built with **React**, **TypeScript**
 
 ## 🛠️ Tech Stack
 
-| Technology | Purpose |
-|---|---|
-| React 18 | UI framework |
-| TypeScript | Type safety |
-| Tailwind CSS | Styling |
-| Vite | Build tool & dev server |
-| localStorage | Data persistence |
+| Technology   | Purpose                 |
+| ------------ | ----------------------- |
+| React 18     | UI framework            |
+| TypeScript   | Type safety             |
+| Tailwind CSS | Styling                 |
+| Vite         | Build tool & dev server |
+| localStorage | Data persistence        |
 
 ---
 
